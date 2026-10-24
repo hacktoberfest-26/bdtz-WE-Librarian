@@ -1,0 +1,40 @@
+# H-OS Company Brain — configurazione LLM
+# Copia questo file in server/.env  (NON committare .env: contiene la chiave)
+
+# Interruttore generale: false = usa sempre le regole predefinite (nessuna chiamata esterna)
+LLM_ENABLED=true
+
+# Provider: openai | anthropic | litellm
+#  - openai    -> API OpenAI o qualunque endpoint compatibile (Ollama, vLLM, proxy litellm: imposta LLM_BASE_URL)
+#  - anthropic -> API Anthropic (Messages)
+#  - litellm   -> libreria litellm (pip install litellm), model nel formato "provider/model"
+LLM_PROVIDER=openai
+
+# Modello (se vuoto: gpt-4o-mini per openai/litellm, claude-sonnet-4-5 per anthropic)
+LLM_MODEL=gpt-4o-mini
+
+# Chiave API. In alternativa usa OPENAI_API_KEY / ANTHROPIC_API_KEY (letta in base al provider)
+LLM_API_KEY=
+# OPENAI_API_KEY=sk-...
+# ANTHROPIC_API_KEY=sk-ant-...
+
+# Endpoint personalizzato (opzionale). Esempi:
+#   Ollama locale:  http://localhost:11434/v1   (provider=openai, chiave non necessaria)
+#   Proxy litellm:  http://localhost:4000/v1
+LLM_BASE_URL=
+
+# Timeout in secondi: oltre questo limite si usa il fallback a regole
+LLM_TIMEOUT=20
+
+# Alcuni endpoint compatibili non supportano response_format=json_object: metti false
+LLM_JSON_MODE=true
+
+# Limite di caratteri dell'evento inviato all'LLM (trascrizioni lunghe vengono troncate)
+LLM_MAX_INPUT_CHARS=6000
+# Token massimi in uscita (usato dal provider anthropic)
+LLM_MAX_TOKENS=600
+
+# Sorgenti inviate all'LLM (le altre usano solo le regole predefinite)
+LLM_SOURCES=meet,download,search,navigation
+
+LOG_LEVEL=INFO

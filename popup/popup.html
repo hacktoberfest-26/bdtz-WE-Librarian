@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>H-OS Librarian</title>
+  <style>
+    :root{
+      --ink:#14213D; --slate:#5B6882; --paper:#F5F7FA; --line:#DCE2EC;
+      --on:#0E8A7D; --warn:#E9A23B; --off:#A9B3C5;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;width:340px;background:var(--paper);color:var(--ink);
+         font:13px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+    header{background:var(--ink);color:#fff;padding:14px 16px;display:flex;align-items:center;justify-content:space-between}
+    header h1{margin:0;font-size:15px;font-weight:650;letter-spacing:.2px}
+    header small{display:block;color:#AEB9D0;font-weight:400;margin-top:2px}
+    main{padding:14px 16px 16px}
+    .status{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:8px;
+            background:#fff;border:1px solid var(--line);margin-bottom:14px}
+    .dot{width:10px;height:10px;border-radius:50%;background:var(--off);margin-top:4px;flex:none}
+    .status.on .dot{background:var(--on);box-shadow:0 0 0 4px rgba(14,138,125,.18)}
+    .status p{margin:0}.status .sub{color:var(--slate);font-size:12px}
+    .row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)}
+    .row:last-of-type{border-bottom:0}
+    .row span small{display:block;color:var(--slate);font-size:11.5px}
+    h2{font-size:12px;font-weight:650;color:var(--slate);margin:16px 0 4px}
+    select{width:100%;padding:7px 8px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);font:inherit}
+    /* switch */
+    .sw{position:relative;width:36px;height:20px;flex:none}
+    .sw input{opacity:0;position:absolute;inset:0;margin:0;cursor:pointer;z-index:1}
+    .sw i{position:absolute;inset:0;background:var(--off);border-radius:20px;transition:background .15s}
+    .sw i::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .15s}
+    .sw input:checked + i{background:var(--on)}
+    .sw input:checked + i::after{transform:translateX(16px)}
+    .sw input:focus-visible + i{outline:2px solid var(--ink);outline-offset:2px}
+    .consent{display:none;background:#FFF6E5;border:1px solid var(--warn);border-radius:8px;padding:12px;margin-bottom:14px}
+    .consent.show{display:block}
+    .consent ul{margin:6px 0 10px;padding-left:18px;color:#5a4a2a}
+    button{font:inherit;border:0;border-radius:6px;padding:7px 12px;cursor:pointer}
+    .primary{background:var(--on);color:#fff}.ghost{background:transparent;color:var(--slate);text-decoration:underline;padding:7px 0}
+    .secondary{background:#E6EBF3;color:var(--ink)}
+    #log{list-style:none;margin:0;padding:0;max-height:130px;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:8px}
+    #log li{padding:6px 10px;border-bottom:1px solid var(--line);display:flex;gap:8px;font-size:12px}
+    #log li:last-child{border-bottom:0}
+    #log .t{color:var(--slate);flex:none}
+    #log .q{color:#B9741A}
+    .empty{padding:10px;color:var(--slate);font-size:12px}
+    .foot{display:flex;justify-content:space-between;margin-top:12px}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>H-OS Librarian<small>Input verso il Company Brain</small></h1>
+    <label class="sw" title="Attiva o disattiva tutto">
+      <input type="checkbox" id="master" aria-label="Librarian attivo"><i></i>
+    </label>
+  </header>
+
+  <main>
+    <section class="consent" id="consent">
+      <strong>Prima di iniziare</strong>
+      <ul>
+        <li>Invio solo ciò che attivi qui sotto, a <code>localhost:8000</code>.</li>
+        <li>Niente query string, cookie o percorsi locali dei file.</li>
+        <li>Su Meet chiedo conferma per ogni riunione.</li>
+        <li>Puoi spegnere tutto o revocare il consenso in qualsiasi momento.</li>
+      </ul>
+      <button class="primary" id="accept">Accetto e attivo</button>
+      <button class="ghost" id="decline">Annulla</button>
+    </section>
+
+    <section class="status" id="status">
+      <div class="dot"></div>
+      <div>
+        <p id="statusTitle">Librarian spento</p>
+        <p class="sub" id="statusSub">Nessun dato lascia il browser.</p>
+      </div>
+    </section>
+
+    <h2>Cosa condividere</h2>
+    <div class="row"><span>Google Meet<small>Sottotitoli della riunione, previa conferma</small></span>
+      <label class="sw"><input type="checkbox" data-toggle="meet"><i></i></label></div>
+    <div class="row"><span>Ricerche<small>Query, risultati principali, argomenti correlati</small></span>
+      <label class="sw"><input type="checkbox" data-toggle="search"><i></i></label></div>
+    <div class="row"><span>Download<small>Nome file, tipo e sito di origine</small></span>
+      <label class="sw"><input type="checkbox" data-toggle="downloads"><i></i></label></div>
+    <div class="row"><span>Navigazione<small>Solo dominio, percorso e titolo pagina</small></span>
+      <label class="sw"><input type="checkbox" data-toggle="navigation"><i></i></label></div>
+    <div class="row"><span>Demo Meet (dati finti)<small>Inventa trascrizione e partecipanti: solo per presentazioni</small></span>
+      <label class="sw"><input type="checkbox" id="simulate"><i></i></label></div>
+
+    <h2>Il tuo ruolo in azienda</h2>
+    <select id="role" aria-label="Ruolo aziendale">
+      <option value="developer">Sviluppatore</option>
+      <option value="product_manager">Product manager</option>
+      <option value="sales">Vendite</option>
+      <option value="marketing">Marketing</option>
+      <option value="hr">Risorse umane</option>
+      <option value="finance">Finance</option>
+      <option value="legal">Legale</option>
+      <option value="operations">Operations</option>
+    </select>
+
+    <h2>Ultimi invii</h2>
+    <ul id="log"></ul>
+
+    <div class="foot">
+      <button class="secondary" id="ping">Verifica backend</button>
+      <button class="ghost" id="revoke">Revoca consenso e cancella dati</button>
+    </div>
+  </main>
+  <script src="popup.js"></script>
+</body>
+</html>
